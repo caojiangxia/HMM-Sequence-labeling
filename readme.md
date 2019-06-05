@@ -2,7 +2,7 @@
 
 ## 运行方式
 
-首先将raw_data.txt,pre.py,HMM.py置于相同目录下。
+首先将raw_data.txt(这里只有小数据，可以自己构造成类似的就好),pre.py,HMM.py置于相同目录下。
 
 之后运行pre.py文件，进行划分训练集train与测试集test，比例为19:1，之后通过极大似然估计得到A,B,wordId,Id2Word,PI,tagId,Id2tag,numberWord,numberTag等参数。程序结束时则将隐马模型构建完毕。
 
