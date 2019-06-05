@@ -17,11 +17,11 @@ test=pickle.load(open("test.pkl","rb"))
 PI=pickle.load(open("PI.pkl","rb"))
 sum=pickle.load(open("sum.pkl","rb"))
 numberTag=pickle.load(open("numberTag.pkl","rb"))
-numberWord=pickle.load(open("numberWord.pkl","rb"))
+numberTagB=pickle.load(open("numberTagB.pkl", "rb"))
 
 sum+=1
 alltag=len(tagId)
-gaptag = 1000
+gaptag = 10000000
 fw=open("testlable.txt","w")
 def viterbi(sentence,label):
     delta=[]#计算delta矩阵
@@ -31,10 +31,10 @@ def viterbi(sentence,label):
         pathres = []
         if epoch==0:#计算第一列
             for tag in range(alltag):
-                if B.get(sentence[epoch]*gaptag+tag) is None:#如果是训练集不存在这个
-                    deltares.append(math.log2(PI[tag])+math.log2(1/sum))#平滑一下
+                if B.get(tag*gaptag+sentence[epoch]) is None:#如果是训练集不存在这个
+                    deltares.append(math.log2(PI[tag])+math.log2(1/(numberTagB[int(tag/gaptag)]+len(wordId))))#平滑一下
                 else :#如果训练集存在的话
-                    deltares.append(math.log2(PI[tag]) + math.log2(B[sentence[epoch]*gaptag+tag]))#PI与当前的发射概率相乘。log之后就是相加了
+                    deltares.append(math.log2(PI[tag]) + math.log2(B[tag*gaptag+sentence[epoch]]))#PI与当前的发射概率相乘。log之后就是相加了
                 pathres.append(-1)#添加结束符
             delta.append(deltares)
             path.append(pathres)
@@ -50,14 +50,14 @@ def viterbi(sentence,label):
                     if nowdel>MX:#发现更优解
                         MX=nowdel
                         MXJ=tagj
-                if B.get(sentence[epoch] * gaptag + tagi) is None:#当前的观察矩阵不存在这样的发射概率，平滑一下
-                    deltares.append(MX + math.log2(1 / (numberWord[sentence[epoch]] + 1)))
-                else :#当前的观察矩阵存在这的发射概率，正常计算
-                    deltares.append(MX + math.log2(B[sentence[epoch] * gaptag + tagi]))
+                if B.get(tagi * gaptag + sentence[epoch]) is None:#当前的观察矩阵不存在这样的发射概率，平滑一下
+                    deltares.append(MX + math.log2(1 / (numberTagB[tagi] + len(wordId))))
+                else :#当前的观察矩阵存在这样的发射概率，正常计算
+                    deltares.append(MX + math.log2(B[tagi * gaptag + sentence[epoch]]))
                 pathres.append(MXJ)
             delta.append(deltares)#保存结果
             path.append(pathres)
-    MX=0
+    MX=-1000000
     MXI=0
     for i in range(alltag):#找最后的最优结果
         if delta[-1][i]>MX:
@@ -71,6 +71,7 @@ def viterbi(sentence,label):
         cnt-=1
     ans.reverse()
     ret=0
+    #print(ans,"\n",label)
     for i in range(len(ans)):#计算一下当前的正确的个数
         fw.write(str(Id2word[sentence[i]])+"\t"+str(Id2tag[label[i]])+"\t"+str(Id2tag[ans[i]])+"\n")
         if ans[i]==label[i]:
