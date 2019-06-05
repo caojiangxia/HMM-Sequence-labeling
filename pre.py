@@ -55,7 +55,7 @@ if __name__ == '__main__':
                         numberWord[word[0]] += 1#为了计算A,B矩阵，我们统计其分母部分
                         numberTag[word[1]] += 1#了计算A,B矩阵，我们统计其分母部分
                         res=[word[0],word[1]]#最后一个的话，我们需要减掉，因为对A矩阵有影响
-                        if pretag>0:#第一个没法计算，所以这样搞一下
+                        if pretag>=0:#第一个没法计算，所以这样搞一下
                             if A.get(pretag*gaptag+word[1]) is None :#为了节省空间，进行hash
                                 A[pretag*gaptag+word[1]]=0
                             A[pretag*gaptag+word[1]]+=1
